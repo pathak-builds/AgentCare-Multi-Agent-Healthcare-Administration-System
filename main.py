@@ -5,7 +5,7 @@ FastAPI application entry point.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.api import auth  # new import
+from app.api import auth, users, departments, doctors, slots, appointments, documents, admin
 
 app = FastAPI(
     title="AgentCare",
@@ -13,7 +13,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,8 +21,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Routers
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(departments.router, prefix="/departments", tags=["Departments"])
+app.include_router(doctors.router, prefix="/doctors", tags=["Doctors"])
+app.include_router(slots.router, prefix="/slots", tags=["Slots"])
+app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"])
+app.include_router(documents.router, prefix="/documents", tags=["Documents"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 @app.get("/health")
 async def health_check():
