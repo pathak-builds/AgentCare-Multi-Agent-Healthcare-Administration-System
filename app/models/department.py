@@ -1,9 +1,17 @@
 """
 Hospital department entity.
 """
-from sqlalchemy import Column, String
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .doctor import Doctor
+    from .slot import AppointmentSlot
 
 class Department(BaseModel):
     __tablename__ = "departments"

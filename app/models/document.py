@@ -1,9 +1,16 @@
 """
 Documents uploaded by patients (lab reports, prescriptions, etc.).
 """
-from sqlalchemy import Column, String, ForeignKey, DateTime, Text
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .patient import PatientProfile
 
 class PatientDocument(BaseModel):
     __tablename__ = "patient_documents"

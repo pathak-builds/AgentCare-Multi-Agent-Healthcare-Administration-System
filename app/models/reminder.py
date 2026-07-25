@@ -1,9 +1,16 @@
 """
 Reminders linked to appointments or follow-ups.
 """
-from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .appointment import Appointment
 
 class Reminder(BaseModel):
     __tablename__ = "reminders"

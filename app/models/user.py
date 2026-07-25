@@ -1,10 +1,20 @@
 """
 User model for authentication and role management.
 """
-from sqlalchemy import Column, String, Enum as SQLEnum
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+import enum
+
+from sqlalchemy import String, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
-import enum
+
+if TYPE_CHECKING:
+    from .patient import PatientProfile
+    from .doctor import Doctor
+    from .audit import AuditEvent
+
 
 class RoleEnum(str, enum.Enum):
     PATIENT = "patient"

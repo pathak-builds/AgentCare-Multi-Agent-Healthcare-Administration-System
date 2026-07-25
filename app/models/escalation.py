@@ -1,10 +1,18 @@
 """
 Escalations that require human approval (e.g., safety blocks, complex requests).
 """
-from sqlalchemy import Column, String, ForeignKey, Enum as SQLEnum, Text
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+import enum
+
+from sqlalchemy import String, ForeignKey, Enum as SQLEnum, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
-import enum
+
+if TYPE_CHECKING:
+    from .workflow import WorkflowRun
+    from .user import User
 
 class EscalationStatus(str, enum.Enum):
     PENDING = "pending"

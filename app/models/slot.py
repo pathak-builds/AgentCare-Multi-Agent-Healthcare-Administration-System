@@ -1,9 +1,18 @@
 """
 Available appointment slots for a doctor.
 """
-from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .doctor import Doctor
+    from .department import Department
+    from .appointment import Appointment
 
 class AppointmentSlot(BaseModel):
     __tablename__ = "appointment_slots"

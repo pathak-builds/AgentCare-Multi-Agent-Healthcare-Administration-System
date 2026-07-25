@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.api import auth, users, departments, doctors, slots, appointments, documents, admin
+from app.api import workflow
 
 app = FastAPI(
     title="AgentCare",
@@ -30,6 +31,8 @@ app.include_router(slots.router, prefix="/slots", tags=["Slots"])
 app.include_router(appointments.router, prefix="/appointments", tags=["Appointments"])
 app.include_router(documents.router, prefix="/documents", tags=["Documents"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
+app.include_router(workflow.router, prefix="/workflow", tags=["Workflow"])
+
 
 @app.get("/health")
 async def health_check():

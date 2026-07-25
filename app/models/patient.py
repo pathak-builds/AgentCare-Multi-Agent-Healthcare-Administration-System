@@ -1,9 +1,16 @@
-"""
-Patient profile linked to a user (role=patient).
-"""
-from sqlalchemy import Column, String, Date, ForeignKey
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, Date, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .user import User
+    from .appointment import Appointment
+    from .document import PatientDocument
+    from .workflow import WorkflowRun
 
 class PatientProfile(BaseModel):
     __tablename__ = "patient_profiles"

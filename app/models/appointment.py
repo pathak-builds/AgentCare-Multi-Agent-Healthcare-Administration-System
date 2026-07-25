@@ -1,11 +1,18 @@
-"""
-Appointment booking linking patient, doctor, and slot.
-"""
-from sqlalchemy import Column, String, ForeignKey, Enum as SQLEnum
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
 import enum
 
+if TYPE_CHECKING:
+    from .patient import PatientProfile
+    from .doctor import Doctor
+    from .slot import AppointmentSlot
+    from .reminder import Reminder
+#############################################################################
 class AppointmentStatus(str, enum.Enum):
     SCHEDULED = "scheduled"
     CONFIRMED = "confirmed"

@@ -1,9 +1,16 @@
 """
 Immutable audit log for all significant actions.
 """
-from sqlalchemy import Column, String, ForeignKey, Text
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .user import User
 
 class AuditEvent(BaseModel):
     __tablename__ = "audit_events"

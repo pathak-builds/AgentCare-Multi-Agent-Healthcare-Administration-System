@@ -1,9 +1,19 @@
 """
 Doctor entity, linked to a user (role=staff) and a department.
 """
-from sqlalchemy import Column, String, ForeignKey
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .user import User
+    from .department import Department
+    from .slot import AppointmentSlot
+    from .appointment import Appointment
 
 class Doctor(BaseModel):
     __tablename__ = "doctors"

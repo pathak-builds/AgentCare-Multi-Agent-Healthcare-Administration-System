@@ -1,9 +1,17 @@
 """
 Tracks multi-agent workflow execution per patient request.
 """
-from sqlalchemy import Column, String, ForeignKey, Text
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import String, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .patient import PatientProfile
+    from .escalation import Escalation
 
 class WorkflowRun(BaseModel):
     __tablename__ = "workflow_runs"
