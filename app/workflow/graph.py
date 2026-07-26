@@ -10,17 +10,7 @@ from app.agents.routing.agent import routing_node
 from app.agents.appointment.agent import appointment_node
 from app.agents.document.agent import document_node
 from app.agents.followup.agent import followup_node
-
-
-
-
-
-
-
-def safety_node(state: AgentCareState) -> AgentCareState:
-    state["current_step"] = "safety"
-    return state
-
+from app.agents.safety.agent import safety_node
 
 def build_workflow():
     workflow = StateGraph(AgentCareState)
