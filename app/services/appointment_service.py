@@ -17,9 +17,9 @@ class AppointmentService:
         self.patient_repo = PatientRepository(db)
         self.db = db
 
-    def book_appointment(self, patient_id: str, slot_id: str, reason: str | None, notes: str | None, user_id: str) -> Appointment:
+    def book_appointment(self, patient_user_id: str, slot_id: str, reason: str | None, notes: str | None, user_id: str) -> Appointment:
         # Ensure patient profile exists
-        patient = self.patient_repo.get_by_user_id(patient_id)  # we'll add that method
+        patient = self.patient_repo.get_by_user_id(patient_user_id)  # we'll add that method
         if not patient:
             raise HTTPException(status_code=400, detail="Patient profile not found")
 
