@@ -9,6 +9,11 @@ import os
 import uuid
 from datetime import datetime
 from app.config import settings
+import fitz  # PyMuPDF
+from docx import Document as DocxDocument
+from PIL import Image
+import io
+
 
 class DocumentService:
     def __init__(self, db: Session):
@@ -78,3 +83,32 @@ class DocumentService:
         if not doc:
             raise HTTPException(status_code=404, detail="Document not found")
         return doc
+    
+    def extract_text(self, doc_id: str) -> str:
+        """Extract text from a document file and update the database."""
+        doc = self.repo.get_by_id(doc_id)
+        if not doc:
+            raise HTTPException(status_code=404, detail="Document not found")
+        if doc.extracted_text is not None:
+            return doc.extracted_text  # already extracted
+        file_path = doc.file_path
+        try:
+            if doc.file_type == "pdf":
+                text = ""
+                with fitz.open(file_path) as pdf:
+                    for page in pdf:
+                        text += page.get_text()
+            elif doc.file_type == "docx":
+                d = DocxDocument(file_path)
+                text = "\n".join([para.text for para in d.paragraphs])
+            elif doc.file_type in ("png", "jpeg", "jpg"):
+                # OCR not implemented; return a placeholder
+                text = "[Image file – text extraction not available]"
+            else:
+                text = ""
+            # Update document record
+            doc.extracted_text = text
+            self.db.commit()
+            return text
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Text extraction failed: {str(e)}")

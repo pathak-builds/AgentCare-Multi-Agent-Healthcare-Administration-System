@@ -8,11 +8,10 @@ from app.workflow.state import AgentCareState
 from app.agents.coordinator.agent import coordinator_node
 from app.agents.routing.agent import routing_node
 from app.agents.appointment.agent import appointment_node
+from app.agents.document.agent import document_node
 
 
-def document_node(state: AgentCareState) -> AgentCareState:
-    state["current_step"] = "document"
-    return state
+
 
 
 def followup_node(state: AgentCareState) -> AgentCareState:

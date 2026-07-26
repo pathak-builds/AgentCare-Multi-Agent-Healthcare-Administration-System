@@ -46,6 +46,24 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
         .get("plan", {})
     )
 
+    # ------------------------------------------------------------------
+    # NEW: Skip appointment agent if the workflow is not appointment-related
+    # ------------------------------------------------------------------
+    appointment_intents = {
+        "book_appointment",
+        "cancel_appointment",
+        "reschedule_appointment",
+    }
+
+    if coordinator_plan.get("intent_category") not in appointment_intents:
+        state["agent_outputs"]["appointment"] = {
+            "status": "skipped",
+            "appointment_id": None,
+            "message": "Appointment processing not required for this workflow.",
+        }
+        return state
+    # ------------------------------------------------------------------
+
     routing = (
         state.get("agent_outputs", {})
         .get("routing", {})
@@ -137,13 +155,11 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
 
         content = ai_msg.content or ""
 
-        # Remove markdown if present
         if "```" in content:
             content = content.replace("```json", "")
             content = content.replace("```", "")
             content = content.strip()
 
-        # Extract JSON object
         match = re.search(r"\{.*\}", content, re.DOTALL)
 
         if not match:
@@ -151,9 +167,7 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
                 f"No JSON object found in LLM response.\nResponse was:\n{content}"
             )
 
-        json_text = match.group(0)
-
-        result = json.loads(json_text)
+        result = json.loads(match.group(0))
 
     except Exception as e:
 
