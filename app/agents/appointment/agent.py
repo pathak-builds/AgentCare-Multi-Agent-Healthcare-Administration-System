@@ -39,22 +39,23 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
 
     state["current_step"] = "appointment"
 
+    # --------------------------------------------------------
     # Gather workflow context
+    # --------------------------------------------------------
+
     coordinator_plan = (
         state.get("agent_outputs", {})
         .get("coordinator", {})
         .get("plan", {})
     )
 
-    # ------------------------------------------------------------------
-    # NEW: Skip appointment agent if the workflow is not appointment-related
-    # ------------------------------------------------------------------
     appointment_intents = {
         "book_appointment",
         "cancel_appointment",
         "reschedule_appointment",
     }
 
+    # Skip appointment node if workflow doesn't need it
     if coordinator_plan.get("intent_category") not in appointment_intents:
         state["agent_outputs"]["appointment"] = {
             "status": "skipped",
@@ -62,7 +63,6 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
             "message": "Appointment processing not required for this workflow.",
         }
         return state
-    # ------------------------------------------------------------------
 
     routing = (
         state.get("agent_outputs", {})
@@ -81,7 +81,10 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
             user_request = msg.content
             break
 
-    # Build system prompt
+    # --------------------------------------------------------
+    # Build prompt
+    # --------------------------------------------------------
+
     system_content = (
         APPOINTMENT_SYSTEM_PROMPT
         + f"\n\nCurrent patient_id: {patient_id}"
@@ -97,7 +100,10 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
     llm = get_llm()
     llm_with_tools = llm.bind_tools(APPOINTMENT_TOOLS)
 
-    # Tool calling loop
+    # --------------------------------------------------------
+    # Tool loop
+    # --------------------------------------------------------
+
     try:
 
         ai_msg = llm_with_tools.invoke(messages)
@@ -110,6 +116,11 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
                 tool_name = tool_call["name"]
                 args = tool_call["args"]
 
+                print("\n========== APPOINTMENT TOOL CALL ==========")
+                print("Tool:", tool_name)
+                print("Args:", args)
+                print("==========================================\n")
+
                 if tool_name == "doctor_search":
                     result = doctor_search.invoke(args)
 
@@ -117,7 +128,26 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
                     result = slot_search.invoke(args)
 
                 elif tool_name == "book_appointment":
+
                     result = book_appointment.invoke(args)
+
+                    # --------------------------------------------------
+                    # EARLY RETURN
+                    # The booking tool already returns structured JSON.
+                    # No need for another expensive LLM call.
+                    # --------------------------------------------------
+
+                    try:
+                        booking_result = json.loads(result)
+
+                        if booking_result.get("status") == "success":
+                            state["agent_outputs"]["appointment"] = booking_result
+                            return state
+
+                    except Exception:
+                        # If booking failed and returned plain text,
+                        # continue the normal LLM loop.
+                        pass
 
                 elif tool_name == "cancel_appointment":
                     result = cancel_appointment.invoke(args)
@@ -150,7 +180,10 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
 
         return state
 
-    # Parse final JSON from LLM
+    # --------------------------------------------------------
+    # Parse final LLM response
+    # --------------------------------------------------------
+
     try:
 
         content = ai_msg.content or ""
@@ -160,11 +193,15 @@ def appointment_node(state: AgentCareState) -> AgentCareState:
             content = content.replace("```", "")
             content = content.strip()
 
-        match = re.search(r"\{.*\}", content, re.DOTALL)
+        match = re.search(
+            r"\{.*\}",
+            content,
+            re.DOTALL,
+        )
 
         if not match:
             raise ValueError(
-                f"No JSON object found in LLM response.\nResponse was:\n{content}"
+                f"No JSON object found.\nResponse:\n{content}"
             )
 
         result = json.loads(match.group(0))
