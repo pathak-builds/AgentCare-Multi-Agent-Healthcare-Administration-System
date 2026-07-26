@@ -1,7 +1,10 @@
 """
 Coordinator agent node that analyzes patient intent and plans the workflow.
 """
+
 import json
+import re
+
 from langchain_core.messages import (
     SystemMessage,
     HumanMessage,
@@ -57,6 +60,9 @@ def coordinator_node(state: AgentCareState) -> AgentCareState:
 
                 tool_name = tool_call["name"]
                 tool_args = tool_call["args"]
+                
+                if tool_name == "patient_lookup":
+                    tool_args["user_id"] = state["patient_id"]
 
                 try:
 
@@ -112,16 +118,25 @@ def coordinator_node(state: AgentCareState) -> AgentCareState:
     # Parse final JSON plan
     try:
 
-        plan_text = ai_msg.content
+        plan_text = ai_msg.content or ""
 
         # Remove markdown code fences if present
         if "```" in plan_text:
-            plan_text = plan_text.split("```")[1]
+            plan_text = plan_text.replace("```json", "")
+            plan_text = plan_text.replace("```", "")
+            plan_text = plan_text.strip()
 
-            if plan_text.startswith("json"):
-                plan_text = plan_text[4:]
+        # Extract the first JSON object from the response
+        match = re.search(r"\{.*\}", plan_text, re.DOTALL)
 
-        plan = json.loads(plan_text)
+        if not match:
+            raise ValueError(
+                f"No JSON object found in LLM response.\nResponse was:\n{plan_text}"
+            )
+
+        json_text = match.group(0)
+
+        plan = json.loads(json_text)
 
     except Exception as e:
 

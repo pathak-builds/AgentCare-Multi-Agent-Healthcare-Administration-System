@@ -4,13 +4,8 @@ Builds the LangGraph workflow.
 
 from langgraph.graph import StateGraph, END
 from app.workflow.state import AgentCareState
-from app.workflow.memory import WorkflowCheckpointer
 from app.agents.coordinator.agent import coordinator_node
-
-
-def routing_node(state: AgentCareState) -> AgentCareState:
-    state["current_step"] = "routing"
-    return state
+from app.agents.routing.agent import routing_node
 
 
 def appointment_node(state: AgentCareState) -> AgentCareState:
