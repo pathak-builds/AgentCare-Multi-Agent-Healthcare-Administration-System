@@ -48,6 +48,7 @@ class WorkflowService:
             "current_step": "coordinator",
             "agent_outputs": {},
             "error": None,
+            "thread_id": run.id,
         }
 
         # Configuration with thread_id = run.id for persistence
