@@ -10,6 +10,7 @@ from app.workflow.state import AgentCareState
 from app.utils.audit import log_audit_event
 import uuid
 import traceback
+from langchain_core.messages import HumanMessage
 
 
 class WorkflowService:
@@ -41,7 +42,7 @@ class WorkflowService:
 
         # Initial state
         initial_state: AgentCareState = {
-            "messages": [],
+            "messages": [HumanMessage(content=intent)],
             "patient_id": patient.id,
             "intent": intent,
             "current_step": "coordinator",
