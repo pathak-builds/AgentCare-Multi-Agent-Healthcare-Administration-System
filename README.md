@@ -556,7 +556,6 @@ MIT License
 Built for the **AgentCare Build Challenge 2026** using a completely free
 and open-source technology stack.
 
-
 ## 👨‍💻 Author
 
 **Nimish Pathak**
