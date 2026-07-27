@@ -16,11 +16,11 @@ def book_appointment(
 ):
     service = AppointmentService(db)
     return service.book_appointment(
-        patient_id=current_user.id,  # patient user id
-        slot_id=payload.slot_id,
-        reason=payload.reason,
-        notes=payload.notes,
-        user_id=current_user.id,
+    patient_user_id=current_user.id,
+    slot_id=payload.slot_id,
+    reason=payload.reason,
+    notes=payload.notes,
+    user_id=current_user.id,
     )
 
 @router.get("/mine", response_model=List[AppointmentOut])
