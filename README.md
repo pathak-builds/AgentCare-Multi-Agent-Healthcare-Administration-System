@@ -42,3 +42,31 @@ graph TD
     F --> S[Safety Agent]
     S --> DB[(SQLite + ChromaDB)]
     S --> Response
+
+    agentcare/
+├── app/
+│   ├── agents/            # 6 LangGraph agents
+│   ├── api/               # REST API routers (protected)
+│   ├── auth/              # JWT handling & RBAC dependencies
+│   ├── database/          # Engine, session, Base
+│   ├── models/            # SQLAlchemy models (10 tables)
+│   ├── repositories/      # Data access layer
+│   ├── services/          # Business logic
+│   ├── tools/             # Agent tools (DB, file ops)
+│   ├── workflow/          # LangGraph state & graph builder
+│   ├── prompts/           # System prompts for each agent
+│   ├── schemas/           # Pydantic request/response models
+│   ├── web/               # Web routes (Jinja2 + Bootstrap)
+│   ├── templates/         # HTML templates
+│   ├── static/            # Static assets (CSS, JS)
+│   ├── uploads/           # Document storage
+│   ├── utils/             # Logging, audit helpers
+│   ├── seed/              # Database seed script
+│   └── config.py          # Settings (env vars)
+├── tests/                 # pytest tests
+├── main.py                # Application entrypoint
+├── requirements.txt
+├── .env.example
+├── .gitignore
+├── alembic.ini
+└── README.md
