@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<h2>Book an Appointment</h2>
+<form method="post">
+    <div class="mb-3">
+        <label for="department" class="form-label">Department</label>
+        <select class="form-select" id="department" name="department_id">
+            <option value="">Select department</option>
+            {% for dept in departments %}
+                <option value="{{ dept.id }}">{{ dept.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="doctor" class="form-label">Doctor</label>
+        <select class="form-select" id="doctor" name="doctor_id" disabled>
+            <option value="">Select doctor</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="slot" class="form-label">Available Slots</label>
+        <select class="form-select" id="slot" name="slot_id" disabled>
+            <option value="">Select slot</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="reason" class="form-label">Reason</label>
+        <input type="text" class="form-control" id="reason" name="reason">
+    </div>
+    <button type="submit" class="btn btn-success">Book</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('department').addEventListener('change', async function() {
+    const deptId = this.value;
+    const doctorSelect = document.getElementById('doctor');
+    doctorSelect.disabled = true;
+    if (!deptId) return;
+    const resp = await fetch(`/doctors/?department_id=${deptId}`);
+    const doctors = await resp.json();
+    doctorSelect.innerHTML = '<option value="">Select doctor</option>';
+    doctors.forEach(doc => {
+        doctorSelect.innerHTML += `<option value="${doc.id}">${doc.user.full_name} (${doc.specialization || 'N/A'})</option>`;
+    });
+    doctorSelect.disabled = false;
+    document.getElementById('slot').innerHTML = '<option value="">Select slot</option>';
+    document.getElementById('slot').disabled = true;
+});
+
+document.getElementById('doctor').addEventListener('change', async function() {
+    const doctorId = this.value;
+    const slotSelect = document.getElementById('slot');
+    slotSelect.disabled = true;
+    if (!doctorId) return;
+    const resp = await fetch(`/slots/available/${doctorId}`);
+    const slots = await resp.json();
+    slotSelect.innerHTML = '<option value="">Select slot</option>';
+    slots.forEach(s => {
+        const start = new Date(s.start_time).toLocaleString();
+        slotSelect.innerHTML += `<option value="${s.id}">${start}</option>`;
+    });
+    slotSelect.disabled = false;
+});
+</script>
+{% endblock %}

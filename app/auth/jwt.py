@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from passlib.context import CryptContext
 from app.config import settings
+from fastapi import Response
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -40,3 +42,13 @@ def decode_access_token(token: str) -> dict:
         raise ValueError("Token has expired")
     except jwt.InvalidTokenError:
         raise ValueError("Invalid token")
+    
+def set_token_cookie(response: Response, token: str):
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=False,   # set True in production with HTTPS
+        samesite="lax",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )

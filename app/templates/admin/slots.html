@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Manage Slots{% endblock %}
+{% block content %}
+<h2>Slots</h2>
+<form method="post" action="/admin/slots/create" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="doctor_id" class="form-select">
+            {% for doc in doctors %}<option value="{{ doc.id }}">{{ doc.user.full_name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="department_id" class="form-select">
+            {% for dept in departments %}<option value="{{ dept.id }}">{{ dept.name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-auto"><input type="datetime-local" name="start_time" class="form-control" required></div>
+    <div class="col-auto"><input type="datetime-local" name="end_time" class="form-control" required></div>
+    <div class="col-auto"><button type="submit" class="btn btn-success">Add</button></div>
+</form>
+<table class="table">
+    <thead><tr><th>Doctor</th><th>Start</th><th>End</th><th>Booked</th><th>Action</th></tr></thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.doctor.user.full_name if slot.doctor and slot.doctor.user else 'N/A' }}</td>
+            <td>{{ slot.start_time }}</td>
+            <td>{{ slot.end_time }}</td>
+            <td>{{ 'Yes' if slot.is_booked else 'No' }}</td>
+            <td>
+                <form method="post" action="/admin/slots/{{ slot.id }}/delete" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

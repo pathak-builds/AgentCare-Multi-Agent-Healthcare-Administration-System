@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Manage Doctors{% endblock %}
+{% block content %}
+<h2>Doctors</h2>
+<form method="post" action="/admin/doctors/create" class="row g-2 mb-3">
+    <div class="col-auto"><input type="email" name="user_email" class="form-control" placeholder="Staff Email" required></div>
+    <div class="col-auto">
+        <select name="department_id" class="form-select">
+            {% for dept in departments %}<option value="{{ dept.id }}">{{ dept.name }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="col-auto"><input type="text" name="specialization" class="form-control" placeholder="Specialization"></div>
+    <div class="col-auto"><input type="text" name="license_number" class="form-control" placeholder="License"></div>
+    <div class="col-auto"><button type="submit" class="btn btn-success">Add</button></div>
+</form>
+<table class="table">
+    <thead><tr><th>Name</th><th>Department</th><th>Specialization</th><th>Action</th></tr></thead>
+    <tbody>
+        {% for doc in doctors %}
+        <tr>
+            <td>{{ doc.user.full_name if doc.user else 'N/A' }}</td>
+            <td>{{ doc.department.name if doc.department else 'N/A' }}</td>
+            <td>{{ doc.specialization }}</td>
+            <td>
+                <a href="#" class="btn btn-sm btn-warning disabled">Edit</a>
+                <!-- Delete not implemented, but can be added -->
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

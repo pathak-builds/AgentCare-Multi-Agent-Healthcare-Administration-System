@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}My Workflows{% endblock %}
+{% block content %}
+<h2>My Workflows</h2>
+<div class="mb-3">
+    <form method="post" action="/patient/workflows/start" class="row g-2">
+        <div class="col-auto">
+            <input type="text" class="form-control" name="intent" placeholder="Describe your request" required>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Start Workflow</button>
+        </div>
+    </form>
+</div>
+<table class="table">
+    <thead>
+        <tr><th>ID</th><th>Intent</th><th>Status</th><th>Created</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+        {% for wf in workflows %}
+        <tr>
+            <td>{{ wf.id[:8] }}...</td>
+            <td>{{ wf.intent[:50] }}</td>
+            <td><span class="badge bg-{{ 'success' if wf.status == 'completed' else 'warning' }}">{{ wf.status }}</span></td>
+            <td>{{ wf.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td><a href="/patient/workflows/{{ wf.id }}" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No workflows yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

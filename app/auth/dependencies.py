@@ -1,7 +1,7 @@
 """
 FastAPI dependencies for authentication and role enforcement.
 """
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.database.session import get_db
@@ -51,3 +51,24 @@ def require_role(*allowed_roles: str):
             )
         return current_user
     return role_checker
+
+def get_current_user_from_cookie(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+    try:
+        payload = decode_access_token(token)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+        )
+    user_id: str = payload.get("sub")
+    repo = UserRepository(db)
+    user = repo.get_by_id(user_id)
+    if not user:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    return user

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Manage Departments{% endblock %}
+{% block content %}
+<h2>Departments</h2>
+<form method="post" action="/admin/departments/create" class="row g-2 mb-3">
+    <div class="col-auto"><input type="text" name="name" class="form-control" placeholder="Name" required></div>
+    <div class="col-auto"><input type="text" name="description" class="form-control" placeholder="Description"></div>
+    <div class="col-auto"><button type="submit" class="btn btn-success">Add</button></div>
+</form>
+<table class="table">
+    <thead><tr><th>Name</th><th>Description</th><th>Action</th></tr></thead>
+    <tbody>
+        {% for dept in departments %}
+        <tr>
+            <td>{{ dept.name }}</td>
+            <td>{{ dept.description }}</td>
+            <td>
+                <form method="post" action="/admin/departments/{{ dept.id }}/delete" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

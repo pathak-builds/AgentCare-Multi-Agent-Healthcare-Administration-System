@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}
+Workflow {{ workflow.id[:8] }}
+{% endblock %}
+
+{% block content %}
+
+<h2>Workflow Detail</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Workflow ID</dt>
+    <dd class="col-sm-9">{{ workflow.id }}</dd>
+
+    <dt class="col-sm-3">Intent</dt>
+    <dd class="col-sm-9">{{ workflow.intent }}</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">
+        <span class="badge bg-success">
+            {{ workflow.status }}
+        </span>
+    </dd>
+
+    <dt class="col-sm-3">Current Step</dt>
+    <dd class="col-sm-9">{{ workflow.current_step }}</dd>
+
+    <dt class="col-sm-3">Created</dt>
+    <dd class="col-sm-9">{{ workflow.created_at }}</dd>
+</dl>
+
+<hr>
+
+{% if state %}
+
+<h4>Agent Outputs</h4>
+
+{% for agent, output in state.get("agent_outputs", {}).items() %}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>{{ agent|capitalize }}</strong>
+    </div>
+
+    <div class="card-body">
+        <pre class="mb-0">{{ output | tojson(indent=2) }}</pre>
+    </div>
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="alert alert-warning">
+    No workflow state available.
+</div>
+
+{% endif %}
+
+<a href="/patient/workflows" class="btn btn-secondary">
+    Back
+</a>
+
+{% endblock %}

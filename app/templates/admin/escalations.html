@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Escalations{% endblock %}
+{% block content %}
+<h2>Escalations</h2>
+<table class="table">
+    <thead><tr><th>ID</th><th>Workflow</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+        {% for esc in escalations %}
+        <tr>
+            <td>{{ esc.id[:8] }}</td>
+            <td>{{ esc.workflow_run_id }}</td>
+            <td>{{ esc.reason }}</td>
+            <td><span class="badge bg-{{ 'warning' if esc.status == 'pending' else 'success' if esc.status == 'approved' else 'danger' }}">{{ esc.status }}</span></td>
+            <td>
+                {% if esc.status == 'pending' %}
+                <form method="post" action="/admin/escalations/{{ esc.id }}/approve" style="display:inline;">
+                    <button class="btn btn-sm btn-success">Approve</button>
+                </form>
+                <form method="post" action="/admin/escalations/{{ esc.id }}/reject" style="display:inline;">
+                    <button class="btn btn-sm btn-danger">Reject</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No escalations.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

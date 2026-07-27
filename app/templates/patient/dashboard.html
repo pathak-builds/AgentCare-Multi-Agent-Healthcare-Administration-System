@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Patient Dashboard{% endblock %}
+{% block content %}
+<h2>Welcome, {{ user.full_name }}</h2>
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Upcoming Appointments</div>
+            <div class="card-body">
+                {% if appointments %}
+                    <ul class="list-group">
+                    {% for appt in appointments %}
+                        <li class="list-group-item">
+                            {{ appt.slot.start_time.strftime('%Y-%m-%d %H:%M') }} with Dr. {{ appt.doctor.user.full_name if appt.doctor and appt.doctor.user else 'N/A' }}
+                            <span class="badge bg-{{ 'success' if appt.status == 'scheduled' else 'warning' }}">{{ appt.status }}</span>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No appointments.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Recent Documents</div>
+            <div class="card-body">
+                {% if documents %}
+                    <ul class="list-group">
+                    {% for doc in documents %}
+                        <li class="list-group-item">{{ doc.original_filename }} ({{ doc.file_type }})</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No documents uploaded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
